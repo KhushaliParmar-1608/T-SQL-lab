@@ -1,0 +1,208 @@
+----From the table STUDENT perform the following queries:
+
+----Part – A: 
+
+----1. Display all students whose SPI is greater than 8. 
+WITH STUDENT_SPI AS
+( 
+SELECT * FROM STUDENT
+WHERE SPI > 8
+)
+SELECT * FROM STUDENT_SPI;
+
+----2. Display average SPI of all students. 
+
+WITH AVG_SPI AS
+( 
+SELECT AVG(SPI) AS AVG_SPI 
+FROM STUDENT
+) 
+SELECT * FROM AVG_SPI;
+
+----3. Display total number of students in each branch. 
+
+WITH BRANCH_WISE_SPI AS
+( 
+SELECT BRANCH , COUNT(*) AS TOTAL_STDUDENT
+FROM STUDENT
+GROUP BY BRANCH
+) 
+SELECT * FROM BRANCH_WISE_SPI;
+
+----4. Display students who belong to RAJKOT city.
+
+WITH RAJKOT_CITY AS
+( 
+SELECT*
+FROM STUDENT
+WHERE CITY = 'RAJKOT'
+) 
+SELECT * FROM RAJKOT_CITY;
+
+----5. Find branch names that appear more than once. 
+
+WITH BRANCH_WISE_SPI AS
+( 
+SELECT BRANCH , COUNT(*) AS TOTAL_STDUDENT
+FROM STUDENT
+GROUP BY BRANCH
+HAVING COUNT(*) >1
+) 
+SELECT * FROM BRANCH_WISE_SPI;
+
+----6. Display row number for each student.
+
+WITH RANK_STD AS
+( 
+SELECT STDID, SNAME , CITY , SPI , BRANCH,
+ROW_NUMBER()OVER(ORDER BY SPI DESC) AS RN
+FROM STUDENT
+) 
+SELECT * FROM RANK_STD;
+
+----7. Display top 3 students based on SPI. 
+
+WITH RANK_STD AS
+( 
+SELECT STDID, SNAME , CITY , SPI , BRANCH,
+ROW_NUMBER()OVER(ORDER BY SPI DESC) AS RN
+FROM STUDENT
+) 
+SELECT * FROM RANK_STD
+WHERE RN <=3
+
+----8. Display students having maximum SPI. 
+
+WITH MAX_SPI AS
+(
+SELECT MAX(SPI) AS MAX_SPI
+FROM STUDENT
+)
+SELECT *
+FROM STUDENT
+WHERE SPI = (SELECT MAX_SPI FROM MAX_SPI);
+
+----9. Display students having minimum SPI.
+WITH MIN_SPI AS
+(
+SELECT MIN(SPI) AS MIN_SPI
+FROM STUDENT
+)
+SELECT *
+FROM STUDENT
+WHERE SPI = (SELECT MIN_SPI FROM MIN_SPI);
+
+----10. Display branch -wise rank of students. 
+ 
+WITH BRANCH_WISE_RANK AS
+( 
+SELECT STDID, SNAME , CITY , SPI , BRANCH,
+RANK()OVER(PARTITION BY BRANCH ORDER BY SPI DESC) AS RN
+FROM STUDENT
+) 
+SELECT * FROM BRANCH_WISE_RANK;
+
+----Part – B: 
+----11. Display students SPI average belonging to Computer branch.
+WITH AVG_SPI AS
+( 
+SELECT AVG(SPI) AS AVG_SPI 
+FROM STUDENT
+WHERE BRANCH = 'COMPUTER'
+) 
+SELECT * FROM AVG_SPI;
+
+----12. Display students whose SPI is greater than average SPI of his/her branch.
+WITH AVG_SPI AS
+( 
+SELECT * ,AVG(SPI) OVER(PARTITION BY BRANCH) AS A_SPI 
+FROM STUDENT
+)
+SELECT * FROM AVG_SPI
+WHERE SPI > A_SPI
+
+----13. Display branch having more than 2 students. 
+
+WITH NUM_OF_STD AS
+( 
+SELECT BRANCH ,COUNT(*) AS TOTAL_STD 
+FROM STUDENT
+GROUP BY BRANCH
+HAVING COUNT(*)>2
+)
+SELECT * FROM NUM_OF_STD;
+
+----14. Display branches having average SPI between 7 and 9
+WITH AVG_SPI AS
+( 
+SELECT BRANCH ,AVG(SPI) AS AVG_OF_SPI
+FROM STUDENT
+GROUP BY BRANCH
+HAVING AVG(SPI) BETWEEN 7 AND 9
+)
+SELECT * FROM AVG_SPI;
+
+----15. Display students whose SPI is lower than overall average SPI.
+WITH OVERALLAVG_SPI AS
+( 
+SELECT AVG(SPI) AS A_SPI 
+FROM STUDENT
+)
+SELECT * FROM STUDENT
+WHERE SPI < (SELECT A_SPI FROM OVERALLAVG_SPI)
+
+
+----Part – C: 
+
+----16. Display branches having exactly one student.
+WITH NUM_OF_STD AS
+( 
+SELECT BRANCH ,COUNT(*) AS TOTAL_STD 
+FROM STUDENT
+GROUP BY BRANCH
+HAVING COUNT(*)=1
+)
+SELECT * FROM NUM_OF_STD;
+
+----17. Display branch having highest average SPI.
+WITH HIGH_SPI AS
+(
+SELECT BRANCH, AVG(SPI) AS AVG_SPI
+FROM STUDENT
+GROUP BY BRANCH
+)
+SELECT *
+FROM HIGH_SPI
+WHERE AVG_SPI = (SELECT MAX(AVG_SPI) FROM HIGH_SPI);
+
+----18. Display branch having lowest average SPI. 
+WITH LOW_SPI AS
+(
+SELECT BRANCH, AVG(SPI) AS AVG_SPI
+FROM STUDENT
+GROUP BY BRANCH
+)
+SELECT *
+FROM LOW_SPI
+WHERE AVG_SPI = (SELECT MIN(AVG_SPI) FROM LOW_SPI);
+
+----19. Display students whose SPI is lower than branch average SPI.
+
+WITH AVG_SPI AS
+( 
+SELECT * ,AVG(SPI) OVER(PARTITION BY BRANCH) AS A_SPI 
+FROM STUDENT
+)
+SELECT * FROM AVG_SPI
+WHERE SPI < A_SPI
+
+----20. Display branches having maximum number of students. 
+WITH NUM_OF_STD AS
+(
+    SELECT BRANCH, COUNT(*) AS TOTAL
+    FROM STUDENT
+    GROUP BY BRANCH
+)
+SELECT *
+FROM NUM_OF_STD
+WHERE TOTAL = (SELECT MAX(TOTAL) FROM NUM_OF_STD);
