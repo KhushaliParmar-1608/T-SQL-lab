@@ -1,0 +1,155 @@
+--From the table STUDENT perform the following queries:
+SELECT * FROM STUDENT;
+SELECT * FROM DEPOSIT1;
+--Part – A:  
+
+--1. INSERT Procedures: Create stored procedures to insert records into STUDENT tables 
+--(SP_INSERT_STUDENT) 
+
+CREATE OR ALTER PROC SP_INSERT_STUDENT
+@STDID INT,
+@SNAME VARCHAR(20),
+@CITY VARCHAR(20),
+@SPI DECIMAL(4,2),
+@BRANCH VARCHAR(20)
+AS
+BEGIN
+    INSERT INTO STUDENT
+    VALUES(@STDID , @SNAME , @CITY , @SPI , @BRANCH)
+END
+
+EXEC SP_INSERT_STUDENT 115 , "PUSHTI" , "RAJKOT" , 9.48 ,"COMPUTER"
+EXEC SP_INSERT_STUDENT 116 , "NIKUNJ" , "SURAT"  , 8.80  ,"CHEMICAL" 
+
+
+--2. INSERT Procedures: Create stored procedures to insert records into DEPOSIT tables  
+--(SP_INSERT_DEPOSIT) 
+
+CREATE OR ALTER PROC SP_INSERT_DEPOSIT
+@ACTNO INT,
+@CNAME VARCHAR(20),
+@BNAME VARCHAR(20),
+@AMOUNT INT,
+@ADATE DATETIME
+AS
+BEGIN
+    INSERT INTO DEPOSIT1
+    VALUES(@ACTNO , @CNAME , @BNAME , @AMOUNT , @ADATE)
+END
+
+EXEC SP_INSERT_DEPOSIT 118 , "HEMENT" , "BEDI" , 16000, "05-05-2025" 
+EXEC SP_INSERT_DEPOSIT 119 , "RAVI" , "MAVDI" , 24000 , "09-07-2024" 
+
+--3. UPDATE Procedures: Create stored procedure SP_UPDATE_STUDENT to update Branch in STUDENT 
+--table. (Update using studentID) 
+
+CREATE OR ALTER PROC SP_UPDATE_STUDENT
+@STDID INT,
+@BRANCH VARCHAR(20)
+AS
+BEGIN
+    UPDATE STUDENT
+    SET BRANCH = @BRANCH
+    WHERE STDID = @STDID
+END
+
+EXEC SP_UPDATE_STUDENT 115 , "ELECTRICAL"
+EXEC SP_UPDATE_STUDENT 116 , "MECHANICAL"
+                        
+--4. DELETE Procedures: Create stored procedure SP_DELETE_STUDENT to delete records from STUDENT 
+--where Student Name is RAVI. 
+
+CREATE OR ALTER PROC SP_DELETE_STUDENT
+@NAME VARCHAR(20)
+AS
+BEGIN
+    DELETE FROM STUDENT
+    WHERE SNAME = @NAME
+END
+
+EXEC SP_DELETE_STUDENT "RAVI"
+
+--5. SELECT BY PRIMARY KEY: Create stored procedures to select records by primary key 
+--(SP_SELECT_STUDENT_BY_ID) from Student table. (Display All Columns) 
+
+CREATE PROCEDURE SP_SELECT_STUDENT_BY_ID
+@STDID INT
+AS
+BEGIN
+    SELECT *FROM STUDENT
+    WHERE STDID = @STDID;
+END
+
+EXEC SP_SELECT_STUDENT_BY_ID 101
+EXEC SP_SELECT_STUDENT_BY_ID 102
+
+--6. Create a stored procedure that shows details of the first 5 students ordered by SPI (Highest First). 
+
+CREATE OR ALTER PROC SP_TOP5_STUDENT_DETAIL
+AS
+BEGIN
+    SELECT TOP 5 *
+    FROM STUDENT
+    ORDER BY SPI DESC;
+END
+
+EXEC SP_TOP5_STUDENT_DETAIL;
+
+--From the table EMPLOYEE perform the following queries: 
+
+--Part – B:   
+
+--7. Create a stored procedure which displays all employee details.
+CREATE OR ALTER PROC SP_EMPLOYEE_DETAIL
+AS
+BEGIN
+    SELECT * FROM EMPLOYEE
+END
+
+EXEC SP_EMPLOYEE_DETAIL
+
+--8. Create a stored procedure that takes department name as input and returns all the employee in that 
+--department.
+
+CREATE OR ALTER PROC SP_DEPARTMENT_WISE_DETAIL
+@DEPART VARCHAR(20)
+AS
+BEGIN
+    SELECT * FROM EMPLOYEE
+    WHERE DEPARTMENT = @DEPART
+END
+
+EXEC SP_DEPARTMENT_WISE_DETAIL "ADMIN"
+EXEC SP_DEPARTMENT_WISE_DETAIL "IT"
+
+--Part – C: 
+
+--9. Create a stored procedure which displays department-wise maximum, minimum, and average salary of 
+--employee. 
+
+CREATE OR ALTER PROC SP_DEPARTMENT_WISE_MAX_MIN_AVG_SALARY
+AS
+BEGIN
+    SELECT DEPARTMENT, MIN(SALARY) AS [MINIMUM SALARY],
+           MAX(SALARY) AS [MAXIMUM SALARY],
+           AVG(SALARY) AS [AVERAGE SALARY]
+    FROM EMPLOYEE
+    GROUP BY DEPARTMENT
+END
+
+EXEC SP_DEPARTMENT_WISE_MAX_MIN_AVG_SALARY
+
+--10. Create a stored procedure that accepts department name as parameter and returns total salary of their 
+--department. 
+
+CREATE OR ALTER PROC SP_DEPARTMENT_TOTAL_SALARY
+@DEPARTMENT VARCHAR(20)
+AS
+BEGIN
+    SELECT SUM(SALARY) AS [TOTAL SALARY] 
+    FROM EMPLOYEE
+    WHERE DEPARTMENT = @DEPARTMENT
+END
+
+EXEC SP_DEPARTMENT_TOTAL_SALARY "ADMIN"
+EXEC SP_DEPARTMENT_TOTAL_SALARY "IT"
